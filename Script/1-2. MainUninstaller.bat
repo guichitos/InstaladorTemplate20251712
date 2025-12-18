@@ -10,7 +10,7 @@ rem ===========================================================
 rem === Mode and logging configuration ========================
 rem true  = verbose mode with console messages, logging, and final pause.
 rem false = silent mode (no console output or pause).
-set "IsDesignModeEnabled=false"
+set "IsDesignModeEnabled=true"
 
 if /I not "%IsDesignModeEnabled%"=="true" (
     title TEMPLATE INSTALLER
@@ -211,7 +211,7 @@ call :DebugTrace "[FLAG] Repairing template MRU entries via helper script."
 call "%ScriptDirectory%1-2. Repair Office template MRU.bat"
 
 call :DebugTrace "[FLAG] Opening affected folders and relaunching Office apps."
-echo [DEBUG] Launch flags before opening folders -> Word:%OPEN_WORD_FLAG% PPT:%OPEN_PPT_FLAG% Excel:%OPEN_EXCEL_FLAG%
+call :DebugTrace "[DEBUG] Launch flags before opening folders -> Word:%OPEN_WORD_FLAG% PPT:%OPEN_PPT_FLAG% Excel:%OPEN_EXCEL_FLAG%"
 call :OpenTemplateFolder "%WORD_PATH%" "%IsDesignModeEnabled%" "Word template folder" ""
 call :OpenTemplateFolder "%PPT_PATH%" "%IsDesignModeEnabled%" "PowerPoint template folder" ""
 call :OpenTemplateFolder "%EXCEL_PATH%" "%IsDesignModeEnabled%" "Excel template folder" ""
@@ -220,11 +220,16 @@ if defined WORD_CUSTOM_TEMPLATE_PATH call :OpenTemplateFolder "!WORD_CUSTOM_TEMP
 if defined PPT_CUSTOM_TEMPLATE_PATH call :OpenTemplateFolder "!PPT_CUSTOM_TEMPLATE_PATH!" "%IsDesignModeEnabled%" "Custom PowerPoint templates" ""
 if defined EXCEL_CUSTOM_TEMPLATE_PATH call :OpenTemplateFolder "!EXCEL_CUSTOM_TEMPLATE_PATH!" "%IsDesignModeEnabled%" "Custom Excel templates" ""
 
-echo [DEBUG] Launch flags after cleanup -> Word:%OPEN_WORD_FLAG% PPT:%OPEN_PPT_FLAG% Excel:%OPEN_EXCEL_FLAG%
+call :DebugTrace "[DEBUG] Launch flags after cleanup -> Word:%OPEN_WORD_FLAG% PPT:%OPEN_PPT_FLAG% Excel:%OPEN_EXCEL_FLAG%"
 
 call :DebugTrace "[FLAG] Finalizing uninstaller."
 
 call :Finalize "%LogFilePath%"
+
+if /I "%IsDesignModeEnabled%"=="true" (
+    echo.
+    pause
+)
 
 endlocal
 exit /b
@@ -555,10 +560,10 @@ endlocal & set "%~1=%NP_VAL%"
 exit /b 0
 
 :CloseOfficeApps
-echo [DEBUG] Entering Closing Office applications with args: %*
+call :DebugTrace "[DEBUG] Entering Closing Office applications with args: %*"
 taskkill /IM WINWORD.EXE /F >nul 2>&1
 taskkill /IM POWERPNT.EXE /F >nul 2>&1
 taskkill /IM EXCEL.EXE /F >nul 2>&1
 taskkill /IM OUTLOOK.EXE /F >nul 2>&1
-echo [DEBUG] Exiting Closing Office applications...
+call :DebugTrace "[DEBUG] Exiting Closing Office applications..."
 exit /b 0
