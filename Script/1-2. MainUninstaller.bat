@@ -56,11 +56,16 @@ rem OJO: aquí ya volvemos a usar ScriptDirectory (AppData) para libs y logs
 set "LibraryDirectoryPath=%ScriptDirectory%lib"
 set "LogsDirectoryPath=%ScriptDirectory%logs"
 set "LogFilePath=%LogsDirectoryPath%\uninstall_log.txt"
-set "OfficeTemplateLib=%ScriptDirectory%1-2. ResolveAppProperties.bat"
-set "TemplatePathLib=%ScriptDirectory%1-2. TemplatePathResolver.bat"
 
-if not exist "%OfficeTemplateLib%" (
-    echo [ERROR] Shared library not found: "%OfficeTemplateLib%"
+call :LocateLibrary "1-2. ResolveAppProperties.bat" OfficeTemplateLib "%ScriptDirectory%" "%BaseDirectoryPath%" "%LauncherDirectory%" "%LaunchDirectoryPath%"
+call :LocateLibrary "1-2. TemplatePathResolver.bat" TemplatePathLib "%ScriptDirectory%" "%BaseDirectoryPath%" "%LauncherDirectory%" "%LaunchDirectoryPath%"
+
+if not defined OfficeTemplateLib (
+    echo [ERROR] Shared library not found: "1-2. ResolveAppProperties.bat"
+    exit /b 1
+)
+if not defined TemplatePathLib (
+    echo [ERROR] Shared library not found: "1-2. TemplatePathResolver.bat"
     exit /b 1
 )
 if not exist "%TemplatePathLib%" (
@@ -272,6 +277,29 @@ for %%F in ("!HP_PATH!*.dot*" "!HP_PATH!*.pot*" "!HP_PATH!*.xlt*" "!HP_PATH!*.th
 :HasTemplatePayloadEnd
 set "HP_RESULT=!HP_FOUND!"
 endlocal & if not "%HP_OUT%"=="" set "%HP_OUT%=%HP_RESULT%"
+exit /b 0
+
+:LocateLibrary
+setlocal
+set "LL_NAME=%~1"
+set "LL_OUT_VAR=%~2"
+set "LL_OUT_PATH="
+
+for %%D in ("%~3" "%~4" "%~5" "%~6") do (
+    set "LL_DIR=%%~D"
+    if defined LL_DIR (
+        call :NormalizePath LL_DIR
+        for %%P in ("!LL_DIR!" "!LL_DIR!Script\") do (
+            if exist "%%~fP" (if "%%~aP" GEQ "d" (
+                if exist "%%~fP%LL_NAME%" set "LL_OUT_PATH=%%~fP%LL_NAME%"
+            ))
+        )
+    )
+    if defined LL_OUT_PATH goto :LocateLibraryFound
+)
+
+:LocateLibraryFound
+endlocal & if defined LL_OUT_PATH set "%LL_OUT_VAR%=%LL_OUT_PATH%"
 exit /b 0
 
 
