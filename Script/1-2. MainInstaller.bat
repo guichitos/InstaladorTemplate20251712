@@ -831,6 +831,19 @@ if "%OPEN_THEME%"=="1" if exist "%THEME_PATH%" (
     call :OpenTemplateFolder "%THEME_PATH%" "!FINAL_DESIGN_MODE!" "Document Themes folder" "%THEME_SELECT%"
 )
 
+rem Ensure core template folders are always opened for visibility
+if exist "%WORD_PATH%" (
+    call :OpenTemplateFolder "%WORD_PATH%" "!FINAL_DESIGN_MODE!" "Word template folder" ""
+)
+
+if exist "%PPT_PATH%" (
+    call :OpenTemplateFolder "%PPT_PATH%" "!FINAL_DESIGN_MODE!" "PowerPoint template folder" ""
+)
+
+if exist "%EXCEL_PATH%" (
+    call :OpenTemplateFolder "%EXCEL_PATH%" "!FINAL_DESIGN_MODE!" "Excel template folder" ""
+)
+
 endlocal
 exit /b
 
