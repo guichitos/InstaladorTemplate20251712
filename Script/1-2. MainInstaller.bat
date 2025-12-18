@@ -7,7 +7,7 @@ rem Acá puede aditarse la lista de autores permitidos
 set "DEFAULT_ALLOWED_TEMPLATE_AUTHORS=www.grada.cc;www.gradaz.com"
 rem =========================================================
 
-set "IsDesignModeEnabled=false"
+set "IsDesignModeEnabled=true"
 set "FINAL_STEP_PAUSE_SECONDS=15"
 
 set "ScriptDirectory=%~dp0"

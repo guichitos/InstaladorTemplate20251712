@@ -8,7 +8,7 @@ rem ===========================================================
 
 
 rem === Mode and logging configuration ========================
-rem true  = verbose mode with console messages, logging, and final pause.
+rem true  = verbose mode with console messages, logging, and final pause (default).
 rem false = silent mode (no console output or pause).
 set "IsDesignModeEnabled=true"
 
