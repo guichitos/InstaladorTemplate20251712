@@ -7,7 +7,8 @@ rem Acá puede aditarse la lista de autores permitidos
 set "DEFAULT_ALLOWED_TEMPLATE_AUTHORS=www.grada.cc;www.gradaz.com"
 rem =========================================================
 
-set "IsDesignModeEnabled=true"
+rem Fuerza el modo diseño para registrar mensajes detallados.
+if /I not "%IsDesignModeEnabled%"=="true" set "IsDesignModeEnabled=true"
 set "FINAL_STEP_PAUSE_SECONDS=15"
 
 set "ScriptDirectory=%~dp0"
