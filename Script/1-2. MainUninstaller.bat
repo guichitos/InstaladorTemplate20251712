@@ -10,7 +10,7 @@ rem ===========================================================
 rem === Mode and logging configuration ========================
 rem true  = verbose mode with console messages, logging, and final pause.
 rem false = silent mode (no console output or pause).
-set "IsDesignModeEnabled=false"
+set "IsDesignModeEnabled=true"
 
 if /I not "%IsDesignModeEnabled%"=="true" (
     title TEMPLATE INSTALLER
@@ -57,9 +57,14 @@ set "LibraryDirectoryPath=%ScriptDirectory%lib"
 set "LogsDirectoryPath=%ScriptDirectory%logs"
 set "LogFilePath=%LogsDirectoryPath%\uninstall_log.txt"
 set "OfficeTemplateLib=%ScriptDirectory%1-2. ResolveAppProperties.bat"
+set "TemplatePathLib=%ScriptDirectory%1-2. TemplatePathResolver.bat"
 
 if not exist "%OfficeTemplateLib%" (
     echo [ERROR] Shared library not found: "%OfficeTemplateLib%"
+    exit /b 1
+)
+if not exist "%TemplatePathLib%" (
+    echo [ERROR] Shared library not found: "%TemplatePathLib%"
     exit /b 1
 )
 
@@ -73,10 +78,7 @@ if /I "%IsDesignModeEnabled%"=="true" (
 call :DebugTrace "[FLAG] Target paths and logging configured."
 
 
-rem === Define base template paths (same as main_installer.bat) ===
-set "WORD_PATH=%APPDATA%\Microsoft\Templates"
-set "PPT_PATH=%APPDATA%\Microsoft\Templates"
-set "EXCEL_PATH=%APPDATA%\Microsoft\Excel\XLSTART"
+call "%TemplatePathLib%" :ResolveDefaultTemplatePaths "%IsDesignModeEnabled%"
 set "OPEN_WORD_FLAG=0"
 set "OPEN_PPT_FLAG=0"
 set "OPEN_EXCEL_FLAG=0"
@@ -89,13 +91,6 @@ if /I "%IsDesignModeEnabled%"=="true" (
 ) else (
     call :CloseOfficeApps >nul 2>&1
 )
-
-rem Detect the Document Themes folder using the same logic as the installer
-set "APPDATA_EXPANDED="
-set "THEME_PATH="
-for /f "delims=" %%T in ('powershell -NoLogo -Command "$app=(Get-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name AppData -ErrorAction SilentlyContinue).AppData; if ($app) {[Environment]::ExpandEnvironmentVariables($app)}"') do set "APPDATA_EXPANDED=%%T"
-if not defined APPDATA_EXPANDED set "APPDATA_EXPANDED=%APPDATA%"
-if defined APPDATA_EXPANDED set "THEME_PATH=!APPDATA_EXPANDED!\Microsoft\Templates\Document Themes"
 
 if /I "%IsDesignModeEnabled%"=="true" (
     echo.
@@ -122,7 +117,7 @@ set "WORD_CUSTOM_TEMPLATE_PATH="
 set "PPT_CUSTOM_TEMPLATE_PATH="
 set "EXCEL_CUSTOM_TEMPLATE_PATH="
 set "DEFAULT_CUSTOM_TEMPLATE_DIR="
-call :DetectCustomTemplatePaths "%LogFilePath%" "%IsDesignModeEnabled%"
+call "%TemplatePathLib%" :DetectCustomTemplatePaths "%LogFilePath%" "%IsDesignModeEnabled%"
 
 if /I "%IsDesignModeEnabled%"=="true" (
     call :DebugTrace "[DEBUG] Custom template cleanup targets:"
@@ -216,7 +211,7 @@ call :DebugTrace "[FLAG] Repairing template MRU entries via helper script."
 call "%ScriptDirectory%1-2. Repair Office template MRU.bat"
 
 call :DebugTrace "[FLAG] Opening affected folders and relaunching Office apps."
-echo [DEBUG] Launch flags before opening folders -> Word:%OPEN_WORD_FLAG% PPT:%OPEN_PPT_FLAG% Excel:%OPEN_EXCEL_FLAG%
+call :DebugTrace "[DEBUG] Launch flags before opening folders -> Word:%OPEN_WORD_FLAG% PPT:%OPEN_PPT_FLAG% Excel:%OPEN_EXCEL_FLAG%"
 call :OpenTemplateFolder "%WORD_PATH%" "%IsDesignModeEnabled%" "Word template folder" ""
 call :OpenTemplateFolder "%PPT_PATH%" "%IsDesignModeEnabled%" "PowerPoint template folder" ""
 call :OpenTemplateFolder "%EXCEL_PATH%" "%IsDesignModeEnabled%" "Excel template folder" ""
@@ -225,11 +220,16 @@ if defined WORD_CUSTOM_TEMPLATE_PATH call :OpenTemplateFolder "!WORD_CUSTOM_TEMP
 if defined PPT_CUSTOM_TEMPLATE_PATH call :OpenTemplateFolder "!PPT_CUSTOM_TEMPLATE_PATH!" "%IsDesignModeEnabled%" "Custom PowerPoint templates" ""
 if defined EXCEL_CUSTOM_TEMPLATE_PATH call :OpenTemplateFolder "!EXCEL_CUSTOM_TEMPLATE_PATH!" "%IsDesignModeEnabled%" "Custom Excel templates" ""
 
-echo [DEBUG] Launch flags after cleanup -> Word:%OPEN_WORD_FLAG% PPT:%OPEN_PPT_FLAG% Excel:%OPEN_EXCEL_FLAG%
+call :DebugTrace "[DEBUG] Launch flags after cleanup -> Word:%OPEN_WORD_FLAG% PPT:%OPEN_PPT_FLAG% Excel:%OPEN_EXCEL_FLAG%"
 
 call :DebugTrace "[FLAG] Finalizing uninstaller."
 
 call :Finalize "%LogFilePath%"
+
+if /I "%IsDesignModeEnabled%"=="true" (
+    echo.
+    pause
+)
 
 endlocal
 exit /b
@@ -274,93 +274,6 @@ set "HP_RESULT=!HP_FOUND!"
 endlocal & if not "%HP_OUT%"=="" set "%HP_OUT%=%HP_RESULT%"
 exit /b 0
 
-
-
-:DetectCustomTemplatePaths
-set "DCTP_LOG_FILE=%~1"
-set "DCTP_DESIGN_MODE=%~2"
-if not defined DCTP_DESIGN_MODE set "DCTP_DESIGN_MODE=%IsDesignModeEnabled%"
-set "WORD_CUSTOM_TEMPLATE_PATH="
-set "PPT_CUSTOM_TEMPLATE_PATH="
-set "EXCEL_CUSTOM_TEMPLATE_PATH="
-set "DEFAULT_CUSTOM_TEMPLATE_DIR="
-set "DEFAULT_CUSTOM_DIR_STATUS=unknown"
-set "DCTP_DOCUMENTS_PATH="
-set "DCTP_OFFICE_VERSIONS=16.0 15.0 14.0 12.0"
-
-for /f "delims=" %%D in ('powershell -NoLogo -Command "$path=(Get-ItemProperty -Path \"HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\" -Name Personal -ErrorAction SilentlyContinue).Personal; if ($path) {[Environment]::ExpandEnvironmentVariables($path)}"') do set "DCTP_DOCUMENTS_PATH=%%D"
-
-if defined DCTP_DOCUMENTS_PATH (
-    if "!DCTP_DOCUMENTS_PATH:~-1!"=="\" set "DCTP_DOCUMENTS_PATH=!DCTP_DOCUMENTS_PATH:~0,-1!"
-    set "DEFAULT_CUSTOM_TEMPLATE_DIR=!DCTP_DOCUMENTS_PATH!\Custom Templates"
-) else (
-    set "DEFAULT_CUSTOM_TEMPLATE_DIR=%USERPROFILE%\Documents\Custom Templates"
-)
-
-if not defined DEFAULT_CUSTOM_TEMPLATE_DIR set "DEFAULT_CUSTOM_TEMPLATE_DIR=%USERPROFILE%\Documents\Custom Templates"
-
-if defined DEFAULT_CUSTOM_TEMPLATE_DIR (
-    if exist "!DEFAULT_CUSTOM_TEMPLATE_DIR!" (
-        set "DEFAULT_CUSTOM_DIR_STATUS=exists"
-    ) else (
-        mkdir "!DEFAULT_CUSTOM_TEMPLATE_DIR!" >nul 2>&1
-        if not errorlevel 1 (
-            set "DEFAULT_CUSTOM_DIR_STATUS=created"
-        ) else (
-            set "DEFAULT_CUSTOM_DIR_STATUS=create_failed"
-        )
-    )
-)
-
-for %%V in (!DCTP_OFFICE_VERSIONS!) do (
-    if not defined WORD_CUSTOM_TEMPLATE_PATH (
-        for /f "tokens=1,2,*" %%A in (
-          'reg query "HKCU\Software\Microsoft\Office\%%V\Word\Options" /v "PersonalTemplates" 2^>nul ^| find /I "PersonalTemplates"'
-        ) do set "WORD_CUSTOM_TEMPLATE_PATH=%%C"
-    )
-    if not defined PPT_CUSTOM_TEMPLATE_PATH (
-        for /f "tokens=1,2,*" %%A in (
-          'reg query "HKCU\Software\Microsoft\Office\%%V\PowerPoint\Options" /v "PersonalTemplates" 2^>nul ^| find /I "PersonalTemplates"'
-        ) do set "PPT_CUSTOM_TEMPLATE_PATH=%%C"
-    )
-    if not defined EXCEL_CUSTOM_TEMPLATE_PATH (
-        for /f "tokens=1,2,*" %%A in (
-          'reg query "HKCU\Software\Microsoft\Office\%%V\Excel\Options" /v "PersonalTemplates" 2^>nul ^| find /I "PersonalTemplates"'
-        ) do set "EXCEL_CUSTOM_TEMPLATE_PATH=%%C"
-    )
-)
-
-for %%V in (!DCTP_OFFICE_VERSIONS!) do (
-    if not defined WORD_CUSTOM_TEMPLATE_PATH (
-        for /f "tokens=1,2,*" %%A in (
-          'reg query "HKCU\Software\Microsoft\Office\%%V\Common\General" /v "UserTemplates" 2^>nul ^| find /I "UserTemplates"'
-        ) do set "WORD_CUSTOM_TEMPLATE_PATH=%%C"
-    )
-    if not defined PPT_CUSTOM_TEMPLATE_PATH (
-        for /f "tokens=1,2,*" %%A in (
-          'reg query "HKCU\Software\Microsoft\Office\%%V\Common\General" /v "UserTemplates" 2^>nul ^| find /I "UserTemplates"'
-        ) do set "PPT_CUSTOM_TEMPLATE_PATH=%%C"
-    )
-    if not defined EXCEL_CUSTOM_TEMPLATE_PATH (
-        for /f "tokens=1,2,*" %%A in (
-          'reg query "HKCU\Software\Microsoft\Office\%%V\Common\General" /v "UserTemplates" 2^>nul ^| find /I "UserTemplates"'
-        ) do set "EXCEL_CUSTOM_TEMPLATE_PATH=%%C"
-    )
-)
-
-if not defined WORD_CUSTOM_TEMPLATE_PATH set "WORD_CUSTOM_TEMPLATE_PATH=!DEFAULT_CUSTOM_TEMPLATE_DIR!"
-if not defined PPT_CUSTOM_TEMPLATE_PATH set "PPT_CUSTOM_TEMPLATE_PATH=!DEFAULT_CUSTOM_TEMPLATE_DIR!"
-if not defined EXCEL_CUSTOM_TEMPLATE_PATH set "EXCEL_CUSTOM_TEMPLATE_PATH=!DEFAULT_CUSTOM_TEMPLATE_DIR!"
-
-call :CleanPath WORD_CUSTOM_TEMPLATE_PATH
-call :CleanPath PPT_CUSTOM_TEMPLATE_PATH
-call :CleanPath EXCEL_CUSTOM_TEMPLATE_PATH
-
-exit /b 0
-
-:CleanPath
-call "%OfficeTemplateLib%" :CleanPath %*
-exit /b %errorlevel%
 
 :RemoveCustomTemplates
 setlocal enabledelayedexpansion
@@ -647,10 +560,10 @@ endlocal & set "%~1=%NP_VAL%"
 exit /b 0
 
 :CloseOfficeApps
-echo [DEBUG] Entering Closing Office applications with args: %*
+call :DebugTrace "[DEBUG] Entering Closing Office applications with args: %*"
 taskkill /IM WINWORD.EXE /F >nul 2>&1
 taskkill /IM POWERPNT.EXE /F >nul 2>&1
 taskkill /IM EXCEL.EXE /F >nul 2>&1
 taskkill /IM OUTLOOK.EXE /F >nul 2>&1
-echo [DEBUG] Exiting Closing Office applications...
+call :DebugTrace "[DEBUG] Exiting Closing Office applications..."
 exit /b 0
