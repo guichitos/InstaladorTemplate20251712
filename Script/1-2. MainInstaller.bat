@@ -8,6 +8,7 @@ set "DEFAULT_ALLOWED_TEMPLATE_AUTHORS=www.grada.cc;www.gradaz.com"
 rem =========================================================
 
 set "IsDesignModeEnabled=false"
+set "FINAL_STEP_PAUSE_SECONDS=15"
 
 set "ScriptDirectory=%~dp0"
 set "BaseHint=%~1"
@@ -269,7 +270,7 @@ rem ============================================================
 rem === Final UI steps: open folders (penultimate) then apps ===
 rem ============================================================
 call :OpenFinalTemplateFolders "%IsDesignModeEnabled%" ""
-call :WaitBetweenFinalSteps 15 "%IsDesignModeEnabled%"
+call :WaitBetweenFinalSteps "%FINAL_STEP_PAUSE_SECONDS%" "%IsDesignModeEnabled%"
 call :LaunchOfficeApps "%FORCE_OPEN_WORD%" "%FORCE_OPEN_PPT%" "%FORCE_OPEN_EXCEL%" "%IsDesignModeEnabled%" ""
 call :EndOfScript
 goto :EOF
