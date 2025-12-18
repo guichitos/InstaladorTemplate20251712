@@ -68,6 +68,10 @@ if not defined TemplatePathLib (
     echo [ERROR] Shared library not found: "1-2. TemplatePathResolver.bat"
     exit /b 1
 )
+if not exist "%TemplatePathLib%" (
+    echo [ERROR] Shared library not found: "%TemplatePathLib%"
+    exit /b 1
+)
 
 if /I "%IsDesignModeEnabled%"=="true" (
     if not exist "%LogsDirectoryPath%" mkdir "%LogsDirectoryPath%"
