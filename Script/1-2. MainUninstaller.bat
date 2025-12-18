@@ -10,7 +10,8 @@ rem ===========================================================
 rem === Mode and logging configuration ========================
 rem true  = verbose mode with console messages, logging, and final pause (default).
 rem false = silent mode (no console output or pause).
-set "IsDesignModeEnabled=true"
+rem Fuerza el modo diseño para registrar mensajes detallados.
+if /I not "%IsDesignModeEnabled%"=="true" set "IsDesignModeEnabled=true"
 
 if /I not "%IsDesignModeEnabled%"=="true" (
     title TEMPLATE INSTALLER
