@@ -105,106 +105,127 @@ set "EXCEL_BASE_TEMPLATE_DIR=%APPDATA%\Microsoft\Excel\XLSTART"
 if /I "%IsDesignModeEnabled%"=="true" (
     echo.
     echo [INFO] Starting base template installation phase...
+
     call :InstallApp "WORD" "Normal.dotx" "%APPDATA%\Microsoft\Templates" "Normal.dotx" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_WORD=1"
-        call :OpenTemplateFolder "%WORD_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Word template folder" "!LAST_INSTALLED_PATH!"
+        set "WORD_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "WORD" "Normal.dotm" "%APPDATA%\Microsoft\Templates" "Normal.dotm" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_WORD=1"
-        call :OpenTemplateFolder "%WORD_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Word template folder" "!LAST_INSTALLED_PATH!"
+        set "WORD_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "WORD" "NormalEmail.dotx" "%APPDATA%\Microsoft\Templates" "NormalEmail.dotx" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_WORD=1"
-        call :OpenTemplateFolder "%WORD_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Word template folder" "!LAST_INSTALLED_PATH!"
+        set "WORD_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "WORD" "NormalEmail.dotm" "%APPDATA%\Microsoft\Templates" "NormalEmail.dotm" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_WORD=1"
-        call :OpenTemplateFolder "%WORD_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Word template folder" "!LAST_INSTALLED_PATH!"
+        set "WORD_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "POWERPOINT" "Blank.potx" "%APPDATA%\Microsoft\Templates" "Blank.potx" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_PPT=1"
-        call :OpenTemplateFolder "%PPT_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base PowerPoint template folder" "!LAST_INSTALLED_PATH!"
+        set "PPT_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "POWERPOINT" "Blank.potm" "%APPDATA%\Microsoft\Templates" "Blank.potm" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_PPT=1"
-        call :OpenTemplateFolder "%PPT_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base PowerPoint template folder" "!LAST_INSTALLED_PATH!"
+        set "PPT_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "EXCEL" "Book.xltx" "%APPDATA%\Microsoft\Excel\XLSTART" "Book.xltx" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_EXCEL=1"
-        call :OpenTemplateFolder "%EXCEL_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Excel template folder" "!LAST_INSTALLED_PATH!"
+        set "EXCEL_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "EXCEL" "Book.xltm" "%APPDATA%\Microsoft\Excel\XLSTART" "Book.xltm" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_EXCEL=1"
-        call :OpenTemplateFolder "%EXCEL_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Excel template folder" "!LAST_INSTALLED_PATH!"
+        set "EXCEL_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "EXCEL" "Sheet.xltx" "%APPDATA%\Microsoft\Excel\XLSTART" "Sheet.xltx" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_EXCEL=1"
-        call :OpenTemplateFolder "%EXCEL_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Excel template folder" "!LAST_INSTALLED_PATH!"
+        set "EXCEL_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "EXCEL" "Sheet.xltm" "%APPDATA%\Microsoft\Excel\XLSTART" "Sheet.xltm" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_EXCEL=1"
-        call :OpenTemplateFolder "%EXCEL_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Excel template folder" "!LAST_INSTALLED_PATH!"
+        set "EXCEL_SELECT=!LAST_INSTALLED_PATH!"
     )
+
 ) else (
+
     call :InstallApp "WORD" "Normal.dotx" "%APPDATA%\Microsoft\Templates" "Normal.dotx" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_WORD=1"
-        call :OpenTemplateFolder "%WORD_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Word template folder" "!LAST_INSTALLED_PATH!"
+        set "WORD_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "WORD" "Normal.dotm" "%APPDATA%\Microsoft\Templates" "Normal.dotm" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_WORD=1"
-        call :OpenTemplateFolder "%WORD_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Word template folder" "!LAST_INSTALLED_PATH!"
+        set "WORD_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "WORD" "NormalEmail.dotx" "%APPDATA%\Microsoft\Templates" "NormalEmail.dotx" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_WORD=1"
-        call :OpenTemplateFolder "%WORD_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Word template folder" "!LAST_INSTALLED_PATH!"
+        set "WORD_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "WORD" "NormalEmail.dotm" "%APPDATA%\Microsoft\Templates" "NormalEmail.dotm" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_WORD=1"
-        call :OpenTemplateFolder "%WORD_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Word template folder" "!LAST_INSTALLED_PATH!"
+        set "WORD_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "POWERPOINT" "Blank.potx" "%APPDATA%\Microsoft\Templates" "Blank.potx" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_PPT=1"
-        call :OpenTemplateFolder "%PPT_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base PowerPoint template folder" "!LAST_INSTALLED_PATH!"
+        set "PPT_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "POWERPOINT" "Blank.potm" "%APPDATA%\Microsoft\Templates" "Blank.potm" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_PPT=1"
-        call :OpenTemplateFolder "%PPT_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base PowerPoint template folder" "!LAST_INSTALLED_PATH!"
+        set "PPT_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "EXCEL" "Book.xltx" "%APPDATA%\Microsoft\Excel\XLSTART" "Book.xltx" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_EXCEL=1"
-        call :OpenTemplateFolder "%EXCEL_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Excel template folder" "!LAST_INSTALLED_PATH!"
+        set "EXCEL_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "EXCEL" "Book.xltm" "%APPDATA%\Microsoft\Excel\XLSTART" "Book.xltm" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_EXCEL=1"
-        call :OpenTemplateFolder "%EXCEL_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Excel template folder" "!LAST_INSTALLED_PATH!"
+        set "EXCEL_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "EXCEL" "Sheet.xltx" "%APPDATA%\Microsoft\Excel\XLSTART" "Sheet.xltx" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_EXCEL=1"
-        call :OpenTemplateFolder "%EXCEL_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Excel template folder" "!LAST_INSTALLED_PATH!"
+        set "EXCEL_SELECT=!LAST_INSTALLED_PATH!"
     )
+
     call :InstallApp "EXCEL" "Sheet.xltm" "%APPDATA%\Microsoft\Excel\XLSTART" "Sheet.xltm" "" "%BaseDirectoryPath%" "%IsDesignModeEnabled%"
     if "!LAST_INSTALL_STATUS!"=="1" (
         set "FORCE_OPEN_EXCEL=1"
-        call :OpenTemplateFolder "%EXCEL_BASE_TEMPLATE_DIR%" "" "%IsDesignModeEnabled%" "base Excel template folder" "!LAST_INSTALLED_PATH!"
+        set "EXCEL_SELECT=!LAST_INSTALLED_PATH!"
     )
 )
 
@@ -244,6 +265,26 @@ if /I "%IsDesignModeEnabled%"=="true" (
     echo [FINAL] Universal Office Template installation completed successfully.
     echo ----------------------------------------------------
 )
+rem ============================================================
+rem === Open affected template folders (final UI step) =========
+rem ============================================================
+
+if "%FORCE_OPEN_WORD%"=="1" if exist "%WORD_PATH%" (
+    call :OpenTemplateFolder "%WORD_PATH%" "%IsDesignModeEnabled%" "Word template folder" "%WORD_SELECT%"
+)
+
+if "%FORCE_OPEN_PPT%"=="1" if exist "%PPT_PATH%" (
+    call :OpenTemplateFolder "%PPT_PATH%" "%IsDesignModeEnabled%" "PowerPoint template folder" "%PPT_SELECT%"
+)
+
+if "%FORCE_OPEN_EXCEL%"=="1" if exist "%EXCEL_PATH%" (
+    call :OpenTemplateFolder "%EXCEL_PATH%" "%IsDesignModeEnabled%" "Excel template folder" "%EXCEL_SELECT%"
+)
+
+if "%OPEN_THEME%"=="1" if exist "%THEME_PATH%" (
+    call :OpenTemplateFolder "%THEME_PATH%" "%IsDesignModeEnabled%" "Document Themes folder" "%THEME_SELECT%"
+)
+
 call :LaunchOfficeApps "%FORCE_OPEN_WORD%" "%FORCE_OPEN_PPT%" "%FORCE_OPEN_EXCEL%" "%IsDesignModeEnabled%" ""
 call :EndOfScript
 goto :EOF
@@ -748,6 +789,7 @@ echo [DEBUG] Entering Closing Office applications with args: %*
 taskkill /IM WINWORD.EXE /F >nul 2>&1
 taskkill /IM POWERPNT.EXE /F >nul 2>&1
 taskkill /IM EXCEL.EXE /F >nul 2>&1
+taskkill /IM OUTLOOK.EXE /F >nul 2>&1
 echo [DEBUG] Exiting Closing Office applications...
 exit /b
 
@@ -1054,26 +1096,6 @@ if /I "%IsDesignModeEnabled%"=="true" (
     echo entra a debug checkpoint
     echo [DEBUG] Copy loop finished
     echo [DEBUG] TOTAL_FILES=!TOTAL_FILES! TOTAL_ERRORS=!TOTAL_ERRORS! TOTAL_BLOCKED=!TOTAL_BLOCKED!
-)
-
-if "!OPEN_WORD!"=="1" if exist "!WORD_PATH!" (
-    call :OpenTemplateFolder "!WORD_PATH!" "" "%IsDesignModeEnabled%" "Word template folder" "!WORD_SELECT!"
-)
-
-if "!OPEN_PPT!"=="1" if exist "!PPT_PATH!" (
-    call :OpenTemplateFolder "!PPT_PATH!" "" "%IsDesignModeEnabled%" "PowerPoint template folder" "!PPT_SELECT!"
-)
-
-if "!OPEN_EXCEL!"=="1" if exist "!EXCEL_PATH!" (
-    call :OpenTemplateFolder "!EXCEL_PATH!" "" "%IsDesignModeEnabled%" "Excel template folder" "!EXCEL_SELECT!"
-)
-
-if "!OPEN_THEME!"=="1" if exist "!THEME_PATH!" (
-    call :OpenTemplateFolder "!THEME_PATH!" "" "%IsDesignModeEnabled%" "Document Themes folder" "!THEME_SELECT!"
-)
-
-if /I "%IsDesignModeEnabled%"=="true" (
-    echo [DEBUG] Exiting CopyAll routine - pre-endlocal
 )
 
 if /I "%IsDesignModeEnabled%"=="true" (
