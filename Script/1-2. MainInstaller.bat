@@ -8,6 +8,7 @@ set "DEFAULT_ALLOWED_TEMPLATE_AUTHORS=www.grada.cc;www.gradaz.com"
 rem =========================================================
 
 set "IsDesignModeEnabled=false"
+set "FINAL_STEP_PAUSE_SECONDS=15"
 
 set "ScriptDirectory=%~dp0"
 set "BaseHint=%~1"
@@ -266,25 +267,10 @@ if /I "%IsDesignModeEnabled%"=="true" (
     echo ----------------------------------------------------
 )
 rem ============================================================
-rem === Open affected template folders (final UI step) =========
+rem === Final UI steps: open folders (penultimate) then apps ===
 rem ============================================================
-
-if "%FORCE_OPEN_WORD%"=="1" if exist "%WORD_PATH%" (
-    call :OpenTemplateFolder "%WORD_PATH%" "%IsDesignModeEnabled%" "Word template folder" "%WORD_SELECT%"
-)
-
-if "%FORCE_OPEN_PPT%"=="1" if exist "%PPT_PATH%" (
-    call :OpenTemplateFolder "%PPT_PATH%" "%IsDesignModeEnabled%" "PowerPoint template folder" "%PPT_SELECT%"
-)
-
-if "%FORCE_OPEN_EXCEL%"=="1" if exist "%EXCEL_PATH%" (
-    call :OpenTemplateFolder "%EXCEL_PATH%" "%IsDesignModeEnabled%" "Excel template folder" "%EXCEL_SELECT%"
-)
-
-if "%OPEN_THEME%"=="1" if exist "%THEME_PATH%" (
-    call :OpenTemplateFolder "%THEME_PATH%" "%IsDesignModeEnabled%" "Document Themes folder" "%THEME_SELECT%"
-)
-
+call :OpenFinalTemplateFolders "%IsDesignModeEnabled%" ""
+call :WaitBetweenFinalSteps "%FINAL_STEP_PAUSE_SECONDS%" "%IsDesignModeEnabled%"
 call :LaunchOfficeApps "%FORCE_OPEN_WORD%" "%FORCE_OPEN_PPT%" "%FORCE_OPEN_EXCEL%" "%IsDesignModeEnabled%" ""
 call :EndOfScript
 goto :EOF
@@ -825,6 +811,45 @@ if "!OPENED_TEMPLATE_FOLDERS:%TOKEN%=!"=="!OPENED_TEMPLATE_FOLDERS!" (
 )
 exit /b
 
+:OpenFinalTemplateFolders
+setlocal EnableDelayedExpansion
+set "FINAL_DESIGN_MODE=%~1"
+
+if "%FORCE_OPEN_WORD%"=="1" if exist "%WORD_PATH%" (
+    call :OpenTemplateFolder "%WORD_PATH%" "!FINAL_DESIGN_MODE!" "Word template folder" "%WORD_SELECT%"
+)
+
+if "%FORCE_OPEN_PPT%"=="1" if exist "%PPT_PATH%" (
+    call :OpenTemplateFolder "%PPT_PATH%" "!FINAL_DESIGN_MODE!" "PowerPoint template folder" "%PPT_SELECT%"
+)
+
+if "%FORCE_OPEN_EXCEL%"=="1" if exist "%EXCEL_PATH%" (
+    call :OpenTemplateFolder "%EXCEL_PATH%" "!FINAL_DESIGN_MODE!" "Excel template folder" "%EXCEL_SELECT%"
+)
+
+if "%OPEN_THEME%"=="1" if exist "%THEME_PATH%" (
+    call :OpenTemplateFolder "%THEME_PATH%" "!FINAL_DESIGN_MODE!" "Document Themes folder" "%THEME_SELECT%"
+)
+
+endlocal
+exit /b
+
+:WaitBetweenFinalSteps
+setlocal EnableDelayedExpansion
+set "WAIT_SECONDS=%~1"
+set "WAIT_DESIGN_MODE=%~2"
+
+if not defined WAIT_SECONDS set "WAIT_SECONDS=15"
+if "%WAIT_SECONDS%"=="" set "WAIT_SECONDS=15"
+
+if /I "!WAIT_DESIGN_MODE!"=="true" (
+    echo [INFO] Waiting !WAIT_SECONDS! seconds before launching applications to highlight step order...
+)
+
+timeout /t !WAIT_SECONDS! /nobreak >nul 2>&1
+endlocal
+exit /b
+
 :LaunchOfficeApps
 setlocal EnableDelayedExpansion
 set "OPEN_WORD_FLAG=%~1"
@@ -1111,6 +1136,11 @@ endlocal & (
     set "FORCE_OPEN_WORD=%OPEN_WORD%"
     set "FORCE_OPEN_PPT=%OPEN_PPT%"
     set "FORCE_OPEN_EXCEL=%OPEN_EXCEL%"
+    set "OPEN_THEME=%OPEN_THEME%"
+    set "WORD_SELECT=%WORD_SELECT%"
+    set "PPT_SELECT=%PPT_SELECT%"
+    set "EXCEL_SELECT=%EXCEL_SELECT%"
+    set "THEME_SELECT=%THEME_SELECT%"
 )
 exit /b
 
@@ -1515,4 +1545,3 @@ if /I "%IsDesignModeEnabled%"=="true" (
 echo Ready
 endlocal
 exit /b 0
-
