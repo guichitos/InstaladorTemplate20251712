@@ -269,6 +269,7 @@ rem ============================================================
 rem === Final UI steps: open folders (penultimate) then apps ===
 rem ============================================================
 call :OpenFinalTemplateFolders "%IsDesignModeEnabled%" ""
+call :WaitBetweenFinalSteps 15 "%IsDesignModeEnabled%"
 call :LaunchOfficeApps "%FORCE_OPEN_WORD%" "%FORCE_OPEN_PPT%" "%FORCE_OPEN_EXCEL%" "%IsDesignModeEnabled%" ""
 call :EndOfScript
 goto :EOF
@@ -829,6 +830,22 @@ if "%OPEN_THEME%"=="1" if exist "%THEME_PATH%" (
     call :OpenTemplateFolder "%THEME_PATH%" "!FINAL_DESIGN_MODE!" "Document Themes folder" "%THEME_SELECT%"
 )
 
+endlocal
+exit /b
+
+:WaitBetweenFinalSteps
+setlocal EnableDelayedExpansion
+set "WAIT_SECONDS=%~1"
+set "WAIT_DESIGN_MODE=%~2"
+
+if not defined WAIT_SECONDS set "WAIT_SECONDS=15"
+if "%WAIT_SECONDS%"=="" set "WAIT_SECONDS=15"
+
+if /I "!WAIT_DESIGN_MODE!"=="true" (
+    echo [INFO] Waiting !WAIT_SECONDS! seconds before launching applications to highlight step order...
+)
+
+timeout /t !WAIT_SECONDS! /nobreak >nul 2>&1
 endlocal
 exit /b
 
