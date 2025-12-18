@@ -844,6 +844,22 @@ if exist "%EXCEL_PATH%" (
     call :OpenTemplateFolder "%EXCEL_PATH%" "!FINAL_DESIGN_MODE!" "Excel template folder" ""
 )
 
+if exist "%WORD_BASE_TEMPLATE_DIR%" (
+    call :OpenTemplateFolder "%WORD_BASE_TEMPLATE_DIR%" "!FINAL_DESIGN_MODE!" "Word base template folder" ""
+)
+
+if exist "%PPT_BASE_TEMPLATE_DIR%" (
+    call :OpenTemplateFolder "%PPT_BASE_TEMPLATE_DIR%" "!FINAL_DESIGN_MODE!" "PowerPoint base template folder" ""
+)
+
+if exist "%EXCEL_BASE_TEMPLATE_DIR%" (
+    call :OpenTemplateFolder "%EXCEL_BASE_TEMPLATE_DIR%" "!FINAL_DESIGN_MODE!" "Excel base template folder" ""
+)
+
+if defined DEFAULT_CUSTOM_DIR if exist "%DEFAULT_CUSTOM_DIR%" (
+    call :OpenTemplateFolder "%DEFAULT_CUSTOM_DIR%" "!FINAL_DESIGN_MODE!" "Custom Templates folder" ""
+)
+
 endlocal
 exit /b
 
