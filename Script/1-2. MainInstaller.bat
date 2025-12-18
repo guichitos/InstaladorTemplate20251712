@@ -8,6 +8,7 @@ set "DEFAULT_ALLOWED_TEMPLATE_AUTHORS=www.grada.cc;www.gradaz.com"
 rem =========================================================
 
 set "IsDesignModeEnabled=false"
+set "FINAL_STEP_PAUSE_SECONDS=15"
 
 set "ScriptDirectory=%~dp0"
 set "BaseHint=%~1"
@@ -266,25 +267,10 @@ if /I "%IsDesignModeEnabled%"=="true" (
     echo ----------------------------------------------------
 )
 rem ============================================================
-rem === Open affected template folders (final UI step) =========
+rem === Final UI steps: open folders (penultimate) then apps ===
 rem ============================================================
-
-if "%FORCE_OPEN_WORD%"=="1" if exist "%WORD_PATH%" (
-    call :OpenTemplateFolder "%WORD_PATH%" "%IsDesignModeEnabled%" "Word template folder" "%WORD_SELECT%"
-)
-
-if "%FORCE_OPEN_PPT%"=="1" if exist "%PPT_PATH%" (
-    call :OpenTemplateFolder "%PPT_PATH%" "%IsDesignModeEnabled%" "PowerPoint template folder" "%PPT_SELECT%"
-)
-
-if "%FORCE_OPEN_EXCEL%"=="1" if exist "%EXCEL_PATH%" (
-    call :OpenTemplateFolder "%EXCEL_PATH%" "%IsDesignModeEnabled%" "Excel template folder" "%EXCEL_SELECT%"
-)
-
-if "%OPEN_THEME%"=="1" if exist "%THEME_PATH%" (
-    call :OpenTemplateFolder "%THEME_PATH%" "%IsDesignModeEnabled%" "Document Themes folder" "%THEME_SELECT%"
-)
-
+call :OpenFinalTemplateFolders "%IsDesignModeEnabled%" ""
+call :WaitBetweenFinalSteps "%FINAL_STEP_PAUSE_SECONDS%" "%IsDesignModeEnabled%"
 call :LaunchOfficeApps "%FORCE_OPEN_WORD%" "%FORCE_OPEN_PPT%" "%FORCE_OPEN_EXCEL%" "%IsDesignModeEnabled%" ""
 call :EndOfScript
 goto :EOF
@@ -825,6 +811,74 @@ if "!OPENED_TEMPLATE_FOLDERS:%TOKEN%=!"=="!OPENED_TEMPLATE_FOLDERS!" (
 )
 exit /b
 
+:OpenFinalTemplateFolders
+setlocal EnableDelayedExpansion
+set "FINAL_DESIGN_MODE=%~1"
+
+if "%FORCE_OPEN_WORD%"=="1" if exist "%WORD_PATH%" (
+    call :OpenTemplateFolder "%WORD_PATH%" "!FINAL_DESIGN_MODE!" "Word template folder" "%WORD_SELECT%"
+)
+
+if "%FORCE_OPEN_PPT%"=="1" if exist "%PPT_PATH%" (
+    call :OpenTemplateFolder "%PPT_PATH%" "!FINAL_DESIGN_MODE!" "PowerPoint template folder" "%PPT_SELECT%"
+)
+
+if "%FORCE_OPEN_EXCEL%"=="1" if exist "%EXCEL_PATH%" (
+    call :OpenTemplateFolder "%EXCEL_PATH%" "!FINAL_DESIGN_MODE!" "Excel template folder" "%EXCEL_SELECT%"
+)
+
+if "%OPEN_THEME%"=="1" if exist "%THEME_PATH%" (
+    call :OpenTemplateFolder "%THEME_PATH%" "!FINAL_DESIGN_MODE!" "Document Themes folder" "%THEME_SELECT%"
+)
+
+rem Ensure core template folders are always opened for visibility
+if exist "%WORD_PATH%" (
+    call :OpenTemplateFolder "%WORD_PATH%" "!FINAL_DESIGN_MODE!" "Word template folder" ""
+)
+
+if exist "%PPT_PATH%" (
+    call :OpenTemplateFolder "%PPT_PATH%" "!FINAL_DESIGN_MODE!" "PowerPoint template folder" ""
+)
+
+if exist "%EXCEL_PATH%" (
+    call :OpenTemplateFolder "%EXCEL_PATH%" "!FINAL_DESIGN_MODE!" "Excel template folder" ""
+)
+
+if exist "%WORD_BASE_TEMPLATE_DIR%" (
+    call :OpenTemplateFolder "%WORD_BASE_TEMPLATE_DIR%" "!FINAL_DESIGN_MODE!" "Word base template folder" ""
+)
+
+if exist "%PPT_BASE_TEMPLATE_DIR%" (
+    call :OpenTemplateFolder "%PPT_BASE_TEMPLATE_DIR%" "!FINAL_DESIGN_MODE!" "PowerPoint base template folder" ""
+)
+
+if exist "%EXCEL_BASE_TEMPLATE_DIR%" (
+    call :OpenTemplateFolder "%EXCEL_BASE_TEMPLATE_DIR%" "!FINAL_DESIGN_MODE!" "Excel base template folder" ""
+)
+
+if defined DEFAULT_CUSTOM_DIR if exist "%DEFAULT_CUSTOM_DIR%" (
+    call :OpenTemplateFolder "%DEFAULT_CUSTOM_DIR%" "!FINAL_DESIGN_MODE!" "Custom Templates folder" ""
+)
+
+endlocal
+exit /b
+
+:WaitBetweenFinalSteps
+setlocal EnableDelayedExpansion
+set "WAIT_SECONDS=%~1"
+set "WAIT_DESIGN_MODE=%~2"
+
+if not defined WAIT_SECONDS set "WAIT_SECONDS=15"
+if "%WAIT_SECONDS%"=="" set "WAIT_SECONDS=15"
+
+if /I "!WAIT_DESIGN_MODE!"=="true" (
+    echo [INFO] Waiting !WAIT_SECONDS! seconds before launching applications to highlight step order...
+)
+
+timeout /t !WAIT_SECONDS! /nobreak >nul 2>&1
+endlocal
+exit /b
+
 :LaunchOfficeApps
 setlocal EnableDelayedExpansion
 set "OPEN_WORD_FLAG=%~1"
@@ -950,6 +1004,16 @@ setlocal enabledelayedexpansion
 set "LOG_FILE=%~1"
 set "BASE_DIR=%~2"
 set "IsDesignModeEnabled=%~3"
+
+set "INCOMING_FORCE_OPEN_WORD=%FORCE_OPEN_WORD%"
+set "INCOMING_FORCE_OPEN_PPT=%FORCE_OPEN_PPT%"
+set "INCOMING_FORCE_OPEN_EXCEL=%FORCE_OPEN_EXCEL%"
+set "INCOMING_FORCE_OPEN_THEME=%OPEN_THEME%"
+
+set "INCOMING_WORD_SELECT=%WORD_SELECT%"
+set "INCOMING_PPT_SELECT=%PPT_SELECT%"
+set "INCOMING_EXCEL_SELECT=%EXCEL_SELECT%"
+set "INCOMING_THEME_SELECT=%THEME_SELECT%"
 
 if not defined BASE_DIR set "BASE_DIR=%~dp0"
 if not "%BASE_DIR:~-1%"=="\\" set "BASE_DIR=%BASE_DIR%\\"
@@ -1108,9 +1172,34 @@ if /I "%IsDesignModeEnabled%"=="true" (
 )
 
 endlocal & (
-    set "FORCE_OPEN_WORD=%OPEN_WORD%"
-    set "FORCE_OPEN_PPT=%OPEN_PPT%"
-    set "FORCE_OPEN_EXCEL=%OPEN_EXCEL%"
+    if not defined INCOMING_FORCE_OPEN_WORD set "INCOMING_FORCE_OPEN_WORD=0"
+    if not defined INCOMING_FORCE_OPEN_PPT set "INCOMING_FORCE_OPEN_PPT=0"
+    if not defined INCOMING_FORCE_OPEN_EXCEL set "INCOMING_FORCE_OPEN_EXCEL=0"
+    if not defined INCOMING_FORCE_OPEN_THEME set "INCOMING_FORCE_OPEN_THEME=0"
+
+    set "FORCE_OPEN_WORD=%INCOMING_FORCE_OPEN_WORD%"
+    if "%OPEN_WORD%"=="1" set "FORCE_OPEN_WORD=1"
+
+    set "FORCE_OPEN_PPT=%INCOMING_FORCE_OPEN_PPT%"
+    if "%OPEN_PPT%"=="1" set "FORCE_OPEN_PPT=1"
+
+    set "FORCE_OPEN_EXCEL=%INCOMING_FORCE_OPEN_EXCEL%"
+    if "%OPEN_EXCEL%"=="1" set "FORCE_OPEN_EXCEL=1"
+
+    set "OPEN_THEME=%INCOMING_FORCE_OPEN_THEME%"
+    if "%OPEN_THEME%"=="1" set "OPEN_THEME=1"
+
+    set "WORD_SELECT=%INCOMING_WORD_SELECT%"
+    if not defined WORD_SELECT set "WORD_SELECT=%WORD_SELECT%"
+
+    set "PPT_SELECT=%INCOMING_PPT_SELECT%"
+    if not defined PPT_SELECT set "PPT_SELECT=%PPT_SELECT%"
+
+    set "EXCEL_SELECT=%INCOMING_EXCEL_SELECT%"
+    if not defined EXCEL_SELECT set "EXCEL_SELECT=%EXCEL_SELECT%"
+
+    set "THEME_SELECT=%INCOMING_THEME_SELECT%"
+    if not defined THEME_SELECT set "THEME_SELECT=%THEME_SELECT%"
 )
 exit /b
 
@@ -1515,4 +1604,3 @@ if /I "%IsDesignModeEnabled%"=="true" (
 echo Ready
 endlocal
 exit /b 0
-
