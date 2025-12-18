@@ -1136,6 +1136,11 @@ endlocal & (
     set "FORCE_OPEN_WORD=%OPEN_WORD%"
     set "FORCE_OPEN_PPT=%OPEN_PPT%"
     set "FORCE_OPEN_EXCEL=%OPEN_EXCEL%"
+    set "OPEN_THEME=%OPEN_THEME%"
+    set "WORD_SELECT=%WORD_SELECT%"
+    set "PPT_SELECT=%PPT_SELECT%"
+    set "EXCEL_SELECT=%EXCEL_SELECT%"
+    set "THEME_SELECT=%THEME_SELECT%"
 )
 exit /b
 
